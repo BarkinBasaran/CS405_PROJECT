@@ -1,0 +1,155 @@
+/* ===============================
+   CS405 Project - Global Styles
+   =============================== */
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  background: #0b0d10;
+  color: #e8eef4;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Center everything */
+#wrap {
+  display: grid;
+  place-items: center;
+  height: 100%;
+}
+
+/* ===============================
+      Layout: Canvas + Controls Panel
+      =============================== */
+#layout {
+  display: grid;
+  grid-template-columns: minmax(400px, 68vw) minmax(360px, 420px);
+  gap: 24px;
+  align-items: start;
+  justify-content: center;
+  width: min(1400px, 96vw);
+}
+
+/* ===============================
+      Canvas Styling
+      =============================== */
+canvas {
+  width: 100%;
+  height: min(750px, 90vh);
+  border: 1px solid #1e2630;
+  border-radius: 14px;
+  background: #0f1416;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+}
+
+/* ===============================
+      Controls Panel
+      =============================== */
+#controls {
+  background: #0f1416;
+  border: 1px solid #1e2630;
+  border-radius: 14px;
+  padding: 16px 16px 10px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
+}
+
+#controls h3 {
+  margin: 0 0 12px;
+  font-size: 15px;
+  color: #98a2b3;
+  letter-spacing: 0.02em;
+  font-weight: 600;
+}
+
+/* ===============================
+      Control Rows (Sliders + Values)
+      =============================== */
+.row {
+  display: grid;
+  grid-template-columns: 100px 1fr 80px;
+  gap: 10px;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.row label {
+  color: #c9d3df;
+  font-size: 14px;
+}
+
+.row input[type="range"] {
+  width: 100%;
+}
+
+.val {
+  text-align: right;
+  color: #c9d3df;
+  font-variant-numeric: tabular-nums;
+  min-width: 64px;
+  white-space: nowrap;
+  font-size: 14px;
+}
+
+/* ===============================
+      Radio Buttons and Extra Controls
+      =============================== */
+.inline {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* ===============================
+      Matrix Display Table
+      =============================== */
+/* ===============================
+   Matrix HUD  (back to grid 4×4)
+   =============================== */
+#mgrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-top: 6px;
+  padding: 8px;
+  background: #0b1114;
+  border: 1px solid #1e2630;
+  border-radius: 8px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+}
+
+.mcell {
+  text-align: right;
+  padding: 6px 8px;
+  background: #0f1416;
+  border: 1px solid #1c2430;
+  border-radius: 6px;
+  color: #d6dde7;
+}
+
+.legend {
+  margin-top: 6px;
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+/* ===============================
+      Responsive Adjustment
+      =============================== */
+@media (max-width: 900px) {
+  #layout {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  #controls {
+    max-width: 95%;
+  }
+}
+/* Optional: hide the right readout for Order row */
+#orderv {
+  display: none;
+}

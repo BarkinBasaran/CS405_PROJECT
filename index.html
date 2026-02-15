@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>CS405 Project</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+
+  <body>
+    <div id="wrap">
+      <main id="layout">
+        <canvas id="glcanvas" width="1000" height="650"></canvas>
+
+        <!-- Controls + HUD -->
+        <aside id="controls">
+          <h3>Scene</h3>
+          <div class="row">
+            <label class="radio"
+              ><input type="radio" name="scene" value="phase12" checked />
+              Phase 1–2 (Transforms / Curves / NPR)</label
+            >
+          </div>
+          <div class="row">
+            <label class="radio"
+              ><input type="radio" name="scene" value="terrain" />
+              Phase 3 (Heightmap Terrain)</label
+            >
+          </div>
+          <hr />
+          <div id="phase12Controls">
+
+          <h3>Transform Controls (Model Matrix M)</h3>
+
+          <div class="row">
+            <label for="tx">Tx</label>
+            <input
+              type="range"
+              id="tx"
+              min="-3.0"
+              max="3.0"
+              step="0.01"
+              value="0"
+            />
+            <span class="val" id="txv">0.00</span>
+          </div>
+
+          <div class="row">
+            <label for="ty">Ty</label>
+            <input
+              type="range"
+              id="ty"
+              min="-3.0"
+              max="3.0"
+              step="0.01"
+              value="0"
+            />
+            <span class="val" id="tyv">0.00</span>
+          </div>
+
+          <div class="row">
+            <label for="rx">Rotate X (°)</label>
+            <input type="range" id="rx" min="0" max="360" step="1" value="0" />
+            <span class="val" id="rxv">0°</span>
+          </div>
+          <div class="row">
+            <label for="ry">Rotate Y (°)</label>
+            <input type="range" id="ry" min="0" max="360" step="1" value="0" />
+            <span class="val" id="ryv">0°</span>
+          </div>
+          <div class="row">
+            <label for="rz">Rotate Z (°)</label>
+            <input type="range" id="rz" min="0" max="360" step="1" value="0" />
+            <span class="val" id="rzv">0°</span>
+          </div>
+
+          <div class="row">
+            <label for="uScale">Uniform Scale</label>
+            <div class="inline">
+              <input type="checkbox" id="uScale" checked />
+              <!-- su ∈ [-3,3] → scale = 2^su -->
+              <input
+                type="range"
+                id="su"
+                min="-3.00"
+                max="3.00"
+                step="0.01"
+                value="0.00"
+                style="width: 180px"
+              />
+            </div>
+            <span class="val" id="suv">1.00</span>
+          </div>
+
+          <div class="row">
+            <label for="sx">Scale X</label>
+            <input
+              type="range"
+              id="sx"
+              min="-3.00"
+              max="3.00"
+              step="0.01"
+              value="0.00"
+            />
+            <span class="val" id="sxv">1.00</span>
+          </div>
+
+          <div class="row">
+            <label for="sy">Scale Y</label>
+            <input
+              type="range"
+              id="sy"
+              min="-3.00"
+              max="3.00"
+              step="0.01"
+              value="0.00"
+            />
+            <span class="val" id="syv">1.00</span>
+          </div>
+
+          <div class="row">
+            <label for="sz">Scale Z</label>
+            <input
+              type="range"
+              id="sz"
+              min="-3.00"
+              max="3.00"
+              step="0.01"
+              value="0.00"
+            />
+            <span class="val" id="szv">1.00</span>
+          </div>
+
+          <div class="row">
+            <label for="keepView">Keep in View</label>
+            <input type="checkbox" id="keepView" />
+            <span class="val"></span>
+          </div>
+
+          <div class="row">
+            <label>Order</label>  
+            <div class="inline">
+              <label class="radio"
+                ><input type="radio" name="order" value="TRS" checked />
+                TRS</label
+              >
+              <label class="radio"
+                ><input type="radio" name="order" value="RTS" /> RTS</label
+              >
+            </div>
+            <span class="val" id="orderv">TRS</span>
+          </div>
+
+          <!-- Projection -->
+          <div class="row">
+            <label>Projection</label>
+            <div class="inline">
+              <label class="radio"
+                ><input
+                  type="radio"
+                  name="projection"
+                  value="perspective"
+                  checked
+                />
+                Perspective</label
+              >
+              <label class="radio"
+                ><input type="radio" name="projection" value="ortho" />
+                Ortho</label
+              >
+            </div>
+          </div>
+
+          <!-- Projection params (LOG near/far) -->
+          <div class="row">
+            <label for="fov">FOV</label>
+            <input
+              id="fov"
+              type="range"
+              min="30"
+              max="90"
+              value="45"
+              step="1"
+            />
+            <span class="val"><span id="fovv">45</span>°</span>
+          </div>
+
+          <div class="row">
+            <label for="near">Near</label>
+            <!-- Log yorumlanacak: 1..200 → 0.05..100 -->
+            <input
+              id="near"
+              type="range"
+              min="1"
+              max="200"
+              value="10"
+              step="1"
+            />
+            <span class="val" id="nearv">0.10</span>
+          </div>
+
+          <div class="row">
+            <label for="far">Far</label>
+            <!-- Log yorumlanacak: 100..5000 → 10..5000 -->
+            <input
+              id="far"
+              type="range"
+              min="100"
+              max="5000"
+              value="1000"
+              step="10"
+            />
+            <span class="val" id="farv">100</span>
+          </div>
+
+          <div class="row">
+            <label for="orthoSize">Ortho Size</label>
+            <input
+              id="orthoSize"
+              type="range"
+              min="0.5"
+              max="10"
+              value="2"
+              step="0.1"
+            />
+            <span class="val" id="orthoSizev">2.0</span>
+          </div>
+
+          <!-- Debug inset -->
+          <div class="row">
+            <label>Frustum Inset</label>
+            <button id="showInsetBtn" class="btn">Show</button>
+          </div>
+
+          <!-- Shading mode -->
+          <h3 style="margin-top: 14px">Shading</h3>
+          <div class="row">
+            <label>Shading</label>
+            <div class="inline">
+              <label class="radio"
+                ><input type="radio" name="shading" value="glass" checked />
+                Glass</label
+              >
+              <label class="radio"
+                ><input type="radio" name="shading" value="toon" /> Toon</label
+              >
+              <label class="radio"
+                ><input type="radio" name="shading" value="paint" />
+                Paint</label
+              >
+            </div>
+          </div>
+
+          <!-- Mode -->
+          <h3 style="margin-top: 14px">Mode</h3>
+          <div class="row">
+            <label>View</label>
+            <div class="inline">
+              <label class="radio"
+                ><input type="radio" name="mode" value="scene" checked />
+                Scene</label
+              >
+              <label class="radio"
+                ><input type="radio" name="mode" value="bezier" /> Bezier</label
+              >
+            </div>
+          </div>
+
+          <!-- Bézier helper -->
+          <div class="row">
+            <label>Bézier</label>
+            <button id="bezReset" class="btn">Reset Points</button>
+          </div>
+          <!-- Bézier animation controls (ADDED) -->
+          <div class="row">
+            <label>Bezier Anim</label>
+            <div class="inline">
+              <button id="btnPlay" class="btn">Bezier Play</button>
+              <button id="btnStop" class="btn">Stop</button>
+              <label style="margin-left: 0.75rem">
+                Speed
+                <input
+                  id="bezierSpeed"
+                  type="range"
+                  min="0.05"
+                  max="1.0"
+                  step="0.05"
+                  value="0.25"
+                />
+              </label>
+            </div>
+          </div>
+
+          <!-- Matrix HUD -->
+          <h3 style="margin-top: 12px">Model Matrix M</h3>
+          <div id="mgrid" aria-label="4x4 model matrix grid"></div>
+          <div class="legend">
+            Shown in row×column form; internal storage is column-major.
+          </div>
+        
+          </div><!-- /#phase12Controls -->
+
+          <div id="terrainControls" style="display:none">
+            <h3>Phase 3: Heightmap Terrain</h3>
+
+            <div class="row">
+              <label class="radio"
+                ><input type="radio" name="terrainMode" value="procedural" checked />
+                Procedural</label
+              >
+              <label class="radio"
+                ><input type="radio" name="terrainMode" value="upload" />
+                Upload image</label
+              >
+            </div>
+
+            <div class="row">
+              <button id="btnTerrainNew">Generate New Terrain</button>
+            </div>
+
+            <div class="row">
+              <label for="terrainRes">Resolution</label>
+              <input type="range" id="terrainRes" min="32" max="200" step="1" value="128" />
+              <span class="val" id="terrainResv">128</span>
+            </div>
+
+            <div class="row">
+              <label for="terrainSize">Terrain size</label>
+              <input type="range" id="terrainSize" min="5" max="60" step="1" value="30" />
+              <span class="val" id="terrainSizev">30</span>
+            </div>
+
+            <div class="row">
+              <label for="heightScale">Height scale</label>
+              <input type="range" id="heightScale" min="0.5" max="20" step="0.1" value="8.0" />
+              <span class="val" id="heightScalev">8.0</span>
+            </div>
+
+            <details open>
+              <summary>Procedural noise controls</summary>
+
+              <div class="row">
+                <label for="octaves">Octaves</label>
+                <input type="range" id="octaves" min="1" max="8" step="1" value="5" />
+                <span class="val" id="octavesv">5</span>
+              </div>
+
+              <div class="row">
+                <label for="persistence">Persistence</label>
+                <input type="range" id="persistence" min="0.1" max="0.9" step="0.01" value="0.5" />
+                <span class="val" id="persistencev">0.50</span>
+              </div>
+
+              <div class="row">
+                <label for="lacunarity">Lacunarity</label>
+                <input type="range" id="lacunarity" min="1.2" max="4.0" step="0.05" value="2.0" />
+                <span class="val" id="lacunarityv">2.00</span>
+              </div>
+
+              <div class="row">
+                <label for="noiseScale">Noise scale</label>
+                <input type="range" id="noiseScale" min="0.2" max="6.0" step="0.05" value="2.5" />
+                <span class="val" id="noiseScalev">2.50</span>
+              </div>
+            </details>
+
+            <div class="row">
+              <label for="heightmapFile">Heightmap image</label>
+              <input type="file" id="heightmapFile" accept="image/*" />
+            </div>
+
+            <div class="row">
+              <button id="btnClearHeightmap">Clear uploaded map</button>
+            </div>
+
+            <p class="help">
+              Camera: drag to rotate, mouse wheel to zoom.
+            </p>
+          </div>
+
+        </aside>
+      </main>
+    </div>
+
+    <script type="module" src="js/app.js"></script>
+  </body>
+</html>
